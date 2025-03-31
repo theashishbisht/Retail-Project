@@ -6,7 +6,6 @@ from lib.DataManipulation import *
 from lib.ConfigReader import get_app_config
 
 @pytest.fixture
-@pytest.mark.skip()
 def spark():
     return get_spark_session("LOCAL")
 
@@ -38,19 +37,19 @@ def test_count_orders_state(spark, expected_results):
     actual_result = count_orders_state(customers_df)
     assert actual_result.collect() == expected_results.collect()
 
-@pytest.mark.skip()
+@pytest.mark.slow()
 def test_check_closed_count(spark):
     orders_df = read_orders(spark, "LOCAL")
     filtered_count = filter_orders_generic(orders_df, "CLOSED").count()
     assert filtered_count == 7556
 
-@pytest.mark.skip()
+@pytest.mark.slow()
 def test_check_pending_payment_count(spark):
     orders_df = read_orders(spark,"LOCAL")
     filtered_count = filter_orders_generic(orders_df,"PENDING_PAYMENT").count()
     assert filtered_count == 15030
 
-@pytest.mark.skip()
+@pytest.mark.slow()
 def test_check_complete_count(spark):
     orders_df = read_orders(spark,"LOCAL")
     filtered_count = filter_orders_generic(orders_df,"COMPLETE").count()
