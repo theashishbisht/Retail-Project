@@ -6,9 +6,9 @@ pipeline {
 	stages {
 		stage('Build') {
 			steps {
-				sh '/usr/bin/python3 -m pip install pipenv'
-                sh '/usr/bin/python3 -m pip install --upgrade pip'
-                sh '/usr/bin/python3 -m pip install pipenv'
+				sh '/usr/bin/python3 -m pip3 install pipenv'
+                sh '/usr/bin/python3 -m pip3 install --upgrade pip3'
+                sh '/usr/bin/python3 -m pip3 install pipenv'
 
                 // Ensure correct PATH for pipenv
                 sh 'export PATH=$HOME/.local/bin:$PATH'
