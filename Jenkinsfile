@@ -6,7 +6,12 @@ pipeline {
 	stages {
 		stage('Build') {
 			steps {
-				sh 'pip3 install pipenv'
+				sh '/usr/bin/python3 -m pip install pipenv'
+                sh '/usr/bin/python3 -m pip install --upgrade pip'
+                sh '/usr/bin/python3 -m pip install pipenv'
+
+                // Ensure correct PATH for pipenv
+                sh 'export PATH=$HOME/.local/bin:$PATH'
 				sh '/bitnami/jenkins/home/.local/bin/pipenv --rm || exit 0'
 				sh '/bitnami/jenkins/home/.local/bin/pipenv install'
 				}
