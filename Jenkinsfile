@@ -2,34 +2,39 @@ pipeline {
     agent any
     environment {
         LABS = credentials('labcreds')
+        PIPENV_HOME = "${WORKSPACE}/.local/bin"
+        PATH = "${PIPENV_HOME}:${PATH}"
     }
     stages {
         stage('Check Dependencies') {
             steps {
                 sh '''
                     echo "Checking Python and Pip versions..."
-                    python3 --version || echo "Python3 not found"
-                    pip3 --version || echo "Pip3 not found"
+                    if ! command -v python3 &> /dev/null; then
+                        echo "Python3 not found! Install manually if required."
+                        exit 1
+                    fi
+                    if ! command -v pip3 &> /dev/null; then
+                        echo "Installing Pip3..."
+                        curl -sS https://bootstrap.pypa.io/get-pip.py | python3 --user
+                        export PATH="${HOME}/.local/bin:${PATH}"
+                    fi
                 '''
             }
         }
         stage('Build') {
             steps {
                 sh '''
-                    if ! command -v pip3 &> /dev/null; then
-                        echo "Installing Python3 and Pip3..."
-                        sudo apt-get update && sudo apt-get install -y python3 python3-pip
-                    fi
+                    export PATH="${HOME}/.local/bin:${PATH}"
                     pip3 install --user pipenv
-                    PIPENV_PATH=$(which pipenv)
-                    $PIPENV_PATH --rm || exit 0
-                    $PIPENV_PATH install
+                    pipenv --rm || exit 0
+                    pipenv install
                 '''
             }
         }
         stage('Test') {
             steps {
-                sh '$(which pipenv) run pytest'
+                sh 'pipenv run pytest'
             }
         }
         stage('Package') {
